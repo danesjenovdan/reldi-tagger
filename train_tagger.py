@@ -3,11 +3,8 @@
 
 import sys
 import re
-import codecs
-import cPickle as pickle
+import _pickle as pickle
 import pycrfsuite
-
-sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
 def conll_iter(stream):
   sent=[]
@@ -16,7 +13,7 @@ def conll_iter(stream):
       yield sent
       sent=[]
     else:
-      sent.append(line.decode('utf8').strip().split('\t'))
+      sent.append(line.strip().split('\t'))
 
 def packed_shape(token,index):
   packed=''
@@ -86,8 +83,8 @@ def search_trie(token,trie,iscomplete=False):
           return (trie[token[-len(token)+i:]],False)
       return trie[token[-len(token)+i:]]
 
-def decode(s):  
-  return ''.join(s).strip('0')
+def decode(s):
+  return s.decode('utf-8')
 
 def reverse(s):
   t=''
@@ -216,15 +213,15 @@ def extract_features_msd(sent,trie): #originally "combined2", relates to the mod
 if __name__=='__main__':
   lang=sys.argv[1]
   trie=pickle.load(open(lang+'.marisa'))
+  trie=pickle.load(open(lang+'.marisa', 'rb'))
   trainer=pycrfsuite.Trainer(algorithm='pa',verbose=True)
   trainer.set_params({'max_iterations':10})
-  for sent in conll_iter(open(lang+'.train')):
-    tokens=[e[0] for e in sent]
     try:
-      labels=[e[1] for e in sent]
     except:
       print tokens
+      print(tokens)
     feats=extract_features_msd(tokens,trie)
     #print tokens,labels,feats
+    print(tokens,labels,feats)
     trainer.append(feats,labels)
   trainer.train(lang+'.msd.model')
