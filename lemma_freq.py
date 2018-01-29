@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sys
-import cPickle as pickle
+import _pickle as pickle
 
 lemma_freq={}
 for line in sys.stdin:
@@ -10,5 +10,5 @@ for line in sys.stdin:
   except:
     continue
   lemma_freq[lemma]=lemma_freq.get(lemma,0)+1
-print lemma_freq.items()[:10]
-pickle.dump(lemma_freq,open(sys.argv[1],'w'),1)
+print(list(lemma_freq)[:10])
+pickle.dump(lemma_freq,open(sys.argv[1],'wb'),1)

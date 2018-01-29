@@ -4,7 +4,7 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.pipeline import Pipeline
-import cPickle as pickle
+import _pickle as pickle
 import sys
 
 def suffix(token,n):
@@ -22,7 +22,7 @@ def extract_features_lemma(token):
   return features
 
 if __name__=='__main__':
-  lexicon=pickle.load(open(sys.argv[1]+'.train'))
+  lexicon=pickle.load(open(sys.argv[1]+'.train', 'rb'))
 
   train={}
   for token,msd,label in lexicon:
@@ -41,9 +41,9 @@ if __name__=='__main__':
       y.append(label)
     p=Pipeline([('vect',DictVectorizer()),('clf',MultinomialNB())])
     p.fit(x,y)
-    #print p.predict(extract_features(u'kolege'))
+    #print(p.predict(extract_features(u'kolege')))
     #break
-    print msd
+    print(msd)
     models[msd]=p
 
-  pickle.dump(models,open(sys.argv[1]+'.guesser','w'),1)
+  pickle.dump(models,open(sys.argv[1]+'.guesser','wb'),1)

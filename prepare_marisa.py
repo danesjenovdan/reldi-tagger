@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import cPickle as pickle
+import _pickle as pickle
 import marisa_trie
 import sys
 
@@ -84,8 +84,7 @@ trie_msd=marisa_trie.BytesTrie(memory_msd)
 #trie_msd=marisa_trie.RecordTrie('s'*9,memory_msd)
 #trie_lemma=marisa_trie.RecordTrie('s'*40,memory_lemma)
 #trie={'msd':trie_msd,'lemma':trie_lemma}
-
-pickle.dump(trie_msd,open(sys.argv[1],'w'),1)
+pickle.dump(trie_msd,open(sys.argv[1],'wb'),1)
 
 """
 from time import time
@@ -93,6 +92,6 @@ for t in (e,trie):
   start=time()
   for i in range(100000):
     f=search_trie(u'susjeda',t)
-  print time()-start
+  print(time()-start)
 """
 

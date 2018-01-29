@@ -11,8 +11,8 @@ reldir = os.path.dirname(os.path.abspath(__file__))
 from train_tagger import extract_features_msd
 from train_lemmatiser import extract_features_lemma
 from subprocess import Popen, PIPE
-import cPickle as pickle
-from StringIO import StringIO
+import _pickle as pickle
+from io import StringIO
 import pycrfsuite
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -123,7 +123,7 @@ def read_and_write(istream, index, ostream):
                               1] + '\n' for entry, tag in zip(entry_list, tags_proper)]) + '\n')
             entry_list = []
         else:
-            entry_list.append(line[:-1].decode('utf8').split('\t'))
+            entry_list.append(line[:-1].split('\t'))
 
 
 def load_models(lang, dir=None):
@@ -135,8 +135,8 @@ def load_models(lang, dir=None):
     trie = pickle.load(open(os.path.join(reldir, lang + '.marisa'), 'rb'))
     tagger = pycrfsuite.Tagger()
     tagger.open(os.path.join(reldir, lang + '.msd.model'))
-    lemmatiser = {'model': pickle.load(open(os.path.join(reldir, lang + '.lexicon.guesser'), 'rb')),
-                  'lexicon': pickle.load(open(os.path.join(reldir, lang + '.lexicon'), 'rb'))}
+    lemmatiser = {'model': pickle.load(open(os.path.join(reldir, lang + '.lexicon.guesser'), 'rb'), encoding="bytes"),
+                  'lexicon': pickle.load(open(os.path.join(reldir, lang + '.lexicon'), 'rb'), encoding="bytes")}
 
 if __name__ == '__main__':
     import argparse
@@ -149,12 +149,13 @@ if __name__ == '__main__':
     parser.add_argument(
         '-i', '--index', help='index of the column to be processed', type=int, default=0)
     args = parser.parse_args()
-    trie = pickle.load(open(os.path.join(reldir, args.lang + '.marisa'), 'rb'))
+    the_file = open(os.path.join(reldir, args.lang + '.marisa'), 'rb')
+    trie = pickle.load(the_file, encoding='bytes')
     tagger = pycrfsuite.Tagger()
     tagger.open(os.path.join(reldir, args.lang + '.msd.model'))
     if args.lemmatise:
-        lemmatiser = {'model': pickle.load(open(os.path.join(reldir, args.lang + '.lexicon.guesser'), 'rb')),
-                      'lexicon': pickle.load(open(os.path.join(reldir, args.lang + '.lexicon'), 'rb'))}
+        lemmatiser = {'model': pickle.load(open(os.path.join(reldir, args.lang + '.lexicon.guesser'), 'rb'), encoding="bytes"),
+                      'lexicon': pickle.load(open(os.path.join(reldir, args.lang + '.lexicon'), 'rb'), encoding="bytes")}
     else:
         lemmatiser = None
     read_and_write(sys.stdin, args.index - 1, sys.stdout)
